@@ -9,14 +9,24 @@ import cors from "cors";
 dotenv.config()
 
 const app = express();
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 
+const allowedOrigins = [
+  "http://localhost:3000",
+  "https://task-manager-lwyd.vercel.app"
+];
 
-// ✅ Allow a specific origin instead of '*'
 app.use(cors({
-  origin: "http://localhost:3000", // your frontend URL
-  credentials: true,               // allow cookies/auth headers
+  origin: function (origin, callback) {
+    if (!origin || allowedOrigins.includes(origin)) {
+      callback(null, true);
+    } else {
+      callback(new Error("Not allowed by CORS"));
+    }
+  },
+  credentials: true,
 }));
+
 
 app.use(express.json());
 
