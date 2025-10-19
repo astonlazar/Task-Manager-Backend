@@ -6,6 +6,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.TaskModel = exports.TASK_DB_REF = void 0;
 const mongoose_1 = __importDefault(require("mongoose"));
 const taskSchema = new mongoose_1.default.Schema({
+    userId: {
+        type: mongoose_1.default.Schema.Types.ObjectId,
+        required: true,
+    },
     title: {
         type: String,
         required: true,

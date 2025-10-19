@@ -1,13 +1,19 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 const task_model_1 = require("../../../models/task.model");
 const status_codes_1 = require("../../../utils/status-codes");
+const mongoose_1 = __importDefault(require("mongoose"));
 class TaskController {
     constructor() {
         this.getAllTasks = async (req, res) => {
             try {
                 const { status, sortByDate } = req.query;
-                const filter = {};
+                const userId = req.user.id;
+                console.log({ userId });
+                const filter = { userId };
                 if (status && ["pending", "completed"].includes(status)) {
                     filter.status = status;
                 }
@@ -42,10 +48,12 @@ class TaskController {
         this.createTask = async (req, res) => {
             try {
                 const { title, description } = req.body;
+                const userId = req.user;
+                console.log(userId);
                 if (!title || !description) {
                     return res.status(status_codes_1.HTTP.BAD_GATEWAY).json({ message: "Inputs required" });
                 }
-                const newTask = new task_model_1.TaskModel({ title, description, status: "pending" });
+                const newTask = new task_model_1.TaskModel({ userId: new mongoose_1.default.Types.ObjectId(userId), title, description, status: "pending" });
                 await newTask.save();
                 console.log(newTask);
                 return res.status(status_codes_1.HTTP.CREATED).json({ data: newTask, message: "Task created successfully" });
