@@ -2,6 +2,10 @@ import mongoose from 'mongoose';
 import { ITask } from '../interfaces';
 
 const taskSchema = new mongoose.Schema<ITask>({
+  userId: {
+    type: mongoose.Schema.Types.ObjectId,
+    required: true,
+  },
   title: {
     type: String,
     required: true,

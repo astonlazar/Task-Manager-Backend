@@ -1,14 +1,17 @@
 import { Request, Response } from "express"
 import { TaskModel } from "../../../models/task.model";
 import { HTTP } from "../../../utils/status-codes";
+import mongoose from "mongoose";
 
 export default class TaskController {
 
   getAllTasks = async (req: Request, res: Response) => {
     try {
       const { status, sortByDate } = req.query;
+      const userId = req.user.id;
+      console.log({userId})
 
-      const filter: any = {};
+      const filter: any = {userId};
       if (status && ["pending", "completed"].includes(status as string)) {
         filter.status = status;
       }
@@ -47,12 +50,14 @@ export default class TaskController {
   createTask = async (req: Request, res: Response) => {
     try {
       const { title, description } = req.body;
+      const userId = req.user;
+      console.log(userId)
 
       if (!title || !description) {
         return res.status(HTTP.BAD_GATEWAY).json({ message: "Inputs required" })
       }
 
-      const newTask = new TaskModel({ title, description, status: "pending" })
+      const newTask = new TaskModel({ userId: new mongoose.Types.ObjectId(userId), title, description, status: "pending" })
 
       await newTask.save()
 
